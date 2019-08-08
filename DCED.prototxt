@@ -1,0 +1,921 @@
+name: "DCED"
+layer {
+  name: "data"
+  type: "HDF5Data"
+  top: "data"
+  top: "label"
+  hdf5_data_param {
+    source: "examples/lud/train.txt"
+    batch_size: 32
+  }
+  include: { phase: TRAIN }
+}
+
+
+layer {
+  name: "conv1"
+  type: "Convolution"
+  bottom: "data"
+  top: "conv1"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 64
+    kernel_size: 3
+    stride: 1
+    pad: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+    engine : CAFFE
+  }
+}
+
+layer {
+  name: "relu1"
+  type: "ReLU"
+  bottom: "conv1"
+  top: "conv1"
+  relu_param{
+   engine : CAFFE
+  }
+}
+
+layer {
+  name: "conv2"
+  type: "Convolution"
+  bottom: "conv1"
+  top: "conv2"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+    pad: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+    engine : CAFFE
+  }
+}
+
+layer {
+  name: "relu2"
+  type: "ReLU"
+  bottom: "conv2"
+  top: "conv2"
+  relu_param{
+   engine : CAFFE
+  }
+}
+
+
+layer {
+  name: "conv1_1"
+  type: "Convolution"
+  bottom: "conv2"
+  top: "conv1_1"
+  param {
+   
+    lr_mult: 1
+  }
+  param {
+   
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+    pad: 2
+	dilation: 2
+    weight_filler {
+      type: "msra"
+    }
+   bias_filler {
+      type: "constant"
+    }
+    engine : CAFFE
+  }
+}
+
+layer {
+  name: "relu1_1"
+  type: "ReLU"
+  bottom: "conv1_1"
+  top: "conv1_1"
+  relu_param{
+   engine : CAFFE
+  }
+}
+
+layer {
+  name: "conv1_2"
+  type: "Convolution"
+  bottom: "conv1_1"
+  top: "conv1_2"
+  param {
+   
+    lr_mult: 1
+  }
+  param {
+    
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+    pad: 2
+	dilation: 2
+    weight_filler {
+      type: "msra"
+    }
+   bias_filler {
+      type: "constant"
+    }
+    engine : CAFFE
+  }
+}
+
+layer {
+  name: "relu1_2"
+  type: "ReLU"
+  bottom: "conv1_2"
+  top: "conv1_2"
+  relu_param{
+   engine : CAFFE
+  }
+}
+layer {
+  name: "conv1_3"
+  type: "Convolution"
+  bottom: "conv1_2"
+  top: "conv1_3"
+  param {
+   
+    lr_mult: 1
+  }
+  param {
+    
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+    pad: 2
+	dilation: 2
+    weight_filler {
+      type: "msra"
+    }
+   bias_filler {
+      type: "constant"
+    }
+    engine : CAFFE
+  }
+}
+
+layer {
+  name: "relu1_3"
+  type: "ReLU"
+  bottom: "conv1_3"
+  top: "conv1_3"
+  relu_param{
+   engine : CAFFE
+  }
+}
+
+layer {
+  name: "Deconv1_1"
+  type: "Deconvolution"
+  bottom: "conv1_3"
+  top: "Deconv1_1"
+  param {
+     
+    lr_mult: 1
+  }
+  param {
+    
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+    pad: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.001
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+	engine: CAFFE
+  }
+}
+layer {
+  name: "relude1_1"
+  type: "ReLU"
+  bottom: "Deconv1_1"
+  top: "Deconv1_1"
+  relu_param{
+   engine : CAFFE
+  }
+}
+
+layer {
+	name: "sum1_1"
+	type: "Eltwise"
+	bottom: "Deconv1_1"
+	bottom: "conv1_2"
+	top: "sum1_1"
+	eltwise_param {
+	  operation: 1
+	}
+}
+
+layer {
+  name: "Deconv1_2"
+  type: "Deconvolution"
+  bottom: "sum1_1"
+  top: "Deconv1_2"
+  param {
+     
+    lr_mult: 1
+  }
+  param {
+    
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+    pad: 1
+    weight_filler {
+       type: "gaussian"
+      std: 0.001
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+	engine: CAFFE
+  }
+}
+layer {
+  name: "relude1_2"
+  type: "ReLU"
+  bottom: "Deconv1_2"
+  top: "Deconv1_2"
+  relu_param{
+   engine : CAFFE
+  }
+}
+
+layer {
+	name: "sum1_2"
+	type: "Eltwise"
+	bottom: "Deconv1_2"
+	bottom: "conv1_1"
+	top: "sum1_2"
+	eltwise_param {
+	  operation: 1
+	}
+}
+
+
+layer {
+  name: "conv1_4"
+  type: "Convolution"
+  bottom: "sum1_2"
+  top: "conv1_4"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+    pad: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+    engine : CAFFE
+  }
+}
+layer {
+  name: "relu1_4"
+  type: "ReLU"
+  bottom: "conv1_4"
+  top: "conv1_4"
+  relu_param{
+   engine : CAFFE
+  }
+}
+###2
+layer {
+  name: "conv2_1"
+  type: "Convolution"
+  bottom: "conv1_4"
+  top: "conv2_1"
+  param {
+    
+    lr_mult: 1
+  }
+  param {
+     
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+    pad: 2
+	dilation: 2
+    weight_filler {
+      type: "msra"
+    }
+   bias_filler {
+      type: "constant"
+    }
+    engine : CAFFE
+  }
+}
+
+layer {
+  name: "relu2_1"
+  type: "ReLU"
+  bottom: "conv2_1"
+  top: "conv2_1"
+  relu_param{
+   engine : CAFFE
+  }
+}
+
+layer {
+  name: "conv2_2"
+  type: "Convolution"
+  bottom: "conv2_1"
+  top: "conv2_2"
+  param {
+    
+    lr_mult: 1
+  }
+  param {
+     
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+    pad: 2
+	dilation: 2
+    weight_filler {
+      type: "msra"
+    }
+   bias_filler {
+      type: "constant"
+    }
+    engine : CAFFE
+  }
+}
+
+layer {
+  name: "relu2_2"
+  type: "ReLU"
+  bottom: "conv2_2"
+  top: "conv2_2"
+  relu_param{
+   engine : CAFFE
+  }
+}
+layer {
+  name: "conv2_3"
+  type: "Convolution"
+  bottom: "conv2_2"
+  top: "conv2_3"
+  param {
+    
+    lr_mult: 1
+  }
+  param {
+     
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+    pad: 2
+	dilation: 2
+    weight_filler {
+      type: "msra"
+    }
+   bias_filler {
+      type: "constant"
+    }
+    engine : CAFFE
+  }
+}
+
+layer {
+  name: "relu2_3"
+  type: "ReLU"
+  bottom: "conv2_3"
+  top: "conv2_3"
+  relu_param{
+   engine : CAFFE
+  }
+}
+
+layer {
+  name: "Deconv2_1"
+  type: "Deconvolution"
+  bottom: "conv2_3"
+  top: "Deconv2_1"
+  param {
+   
+    lr_mult: 1
+  }
+  param {
+     
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+    pad: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.001
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+	engine: CAFFE
+  }
+}
+layer {
+  name: "relude2_1"
+  type: "ReLU"
+  bottom: "Deconv2_1"
+  top: "Deconv2_1"
+  relu_param{
+   engine : CAFFE
+  }
+}
+
+layer {
+	name: "sum2_1"
+	type: "Eltwise"
+	bottom: "Deconv2_1"
+	bottom: "conv2_2"
+	top: "sum2_1"
+	eltwise_param {
+	  operation: 1
+	}
+}
+
+layer {
+  name: "Deconv2_2"
+  type: "Deconvolution"
+  bottom: "sum2_1"
+  top: "Deconv2_2"
+  param {
+   
+    lr_mult: 1
+  }
+  param {
+     
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+    pad: 1
+    weight_filler {
+     type: "gaussian"
+      std: 0.001
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+	engine: CAFFE
+  }
+}
+layer {
+  name: "relude2_2"
+  type: "ReLU"
+  bottom: "Deconv2_2"
+  top: "Deconv2_2"
+  relu_param{
+   engine : CAFFE
+  }
+}
+
+layer {
+	name: "sum2_2"
+	type: "Eltwise"
+	bottom: "Deconv2_2"
+	bottom: "conv2_1"
+	top: "sum2_2"
+	eltwise_param {
+	  operation: 1
+	}
+}
+
+
+
+layer {
+  name: "conv2_4"
+  type: "Convolution"
+  bottom: "sum2_2"
+  top: "conv2_4"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+    pad: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+    engine : CAFFE
+  }
+}
+layer {
+  name: "relu2_4"
+  type: "ReLU"
+  bottom: "conv2_4"
+  top: "conv2_4"
+  relu_param{
+   engine : CAFFE
+  }
+}
+##########3
+layer {
+  name: "conv3_1"
+  type: "Convolution"
+  bottom: "conv2_4"
+  top: "conv3_1"
+  param {
+     
+    lr_mult: 1
+  }
+  param {
+    
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+    pad: 2
+	dilation: 2
+    weight_filler {
+      type: "msra"
+    }
+   bias_filler {
+      type: "constant"
+    }
+    engine : CAFFE
+  }
+}
+
+layer {
+  name: "relu3_1"
+  type: "ReLU"
+  bottom: "conv3_1"
+  top: "conv3_1"
+  relu_param{
+   engine : CAFFE
+  }
+}
+
+layer {
+  name: "conv3_2"
+  type: "Convolution"
+  bottom: "conv3_1"
+  top: "conv3_2"
+  param {
+     
+    lr_mult: 1
+  }
+  param {
+    
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+    pad: 2
+	dilation: 2
+    weight_filler {
+      type: "msra"
+    }
+   bias_filler {
+      type: "constant"
+    }
+    engine : CAFFE
+  }
+}
+
+layer {
+  name: "relu3_2"
+  type: "ReLU"
+  bottom: "conv3_2"
+  top: "conv3_2"
+  relu_param{
+   engine : CAFFE
+  }
+}
+layer {
+  name: "conv3_3"
+  type: "Convolution"
+  bottom: "conv3_2"
+  top: "conv3_3"
+  param {
+     
+    lr_mult: 1
+  }
+  param {
+    
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+    pad: 2
+	dilation: 2
+    weight_filler {
+      type: "msra"
+    }
+   bias_filler {
+      type: "constant"
+    }
+    engine : CAFFE
+  }
+}
+
+layer {
+  name: "relu3_3"
+  type: "ReLU"
+  bottom: "conv3_3"
+  top: "conv3_3"
+  relu_param{
+   engine : CAFFE
+  }
+}
+
+layer {
+  name: "Deconv3_1"
+  type: "Deconvolution"
+  bottom: "conv3_3"
+  top: "Deconv3_1"
+  param {
+     
+    lr_mult: 1
+  }
+  param {
+     
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+    pad: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.001
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+	engine: CAFFE
+  }
+}
+layer {
+  name: "relude3_1"
+  type: "ReLU"
+  bottom: "Deconv3_1"
+  top: "Deconv3_1"
+  relu_param{
+   engine : CAFFE
+  }
+}
+
+layer {
+	name: "sum3_1"
+	type: "Eltwise"
+	bottom: "Deconv3_1"
+	bottom: "conv3_2"
+	top: "sum3_1"
+	eltwise_param {
+	  operation: 1
+	}
+}
+
+layer {
+  name: "Deconv3_2"
+  type: "Deconvolution"
+  bottom: "sum3_1"
+  top: "Deconv3_2"
+  param {
+     
+    lr_mult: 1
+  }
+  param {
+     
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+    pad: 1
+    weight_filler {
+     type: "gaussian"
+      std: 0.001
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+	engine: CAFFE
+  }
+}
+layer {
+  name: "relude3_2"
+  type: "ReLU"
+  bottom: "Deconv3_2"
+  top: "Deconv3_2"
+  relu_param{
+   engine : CAFFE
+  }
+}
+
+layer {
+	name: "sum3_2"
+	type: "Eltwise"
+	bottom: "Deconv3_2"
+	bottom: "conv3_1"
+	top: "sum3_2"
+	eltwise_param {
+	  operation: 1
+	}
+}
+
+
+layer {
+  name: "conv3_4"
+  type: "Convolution"
+  bottom: "sum3_2"
+  top: "conv3_4"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+    pad: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+    engine : CAFFE
+  }
+}
+layer {
+  name: "relu3_4"
+  type: "ReLU"
+  bottom: "conv3_4"
+  top: "conv3_4"
+  relu_param{
+   engine : CAFFE
+  }
+}
+
+
+layer {
+	name: "sum4"
+	type: "Eltwise"
+	bottom: "conv2"
+	bottom: "conv1_4"
+	bottom: "conv2_4"
+	bottom: "conv3_4"
+	top: "sum4"
+	eltwise_param {
+	  operation: 1
+	}
+}
+
+
+layer {
+  name: "convr"
+  type: "Convolution"
+  bottom: "sum4"
+  top: "convr"
+  param {
+   
+    lr_mult: 1
+  }
+  param {
+   
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 1
+    kernel_size: 3
+    stride: 1
+    pad: 1
+    weight_filler {
+      type: "msra"
+    }
+   bias_filler {
+      type: "constant"
+    }
+    engine : CAFFE
+  }
+}
+layer {
+	name: "sum"
+	type: "Eltwise"
+	bottom: "convr"
+	bottom: "data"
+	top: "sum"
+	eltwise_param {
+	  operation: 1
+	}
+}
+layer {
+  name: "flat_data"
+  type: "Flatten"
+  bottom: "sum"
+  top: "flat_data"
+}
+
+layer {
+  name: "flat_label"
+  type: "Flatten"
+  bottom: "label"
+  top: "flat_label"
+}
+layer {
+  name: "loss"
+  type: "EuclideanLoss"
+  bottom: "flat_data"
+  bottom: "flat_label"
+  top: "loss"
+}
